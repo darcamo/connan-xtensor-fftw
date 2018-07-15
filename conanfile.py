@@ -14,7 +14,7 @@ class XtensorfftwConan(ConanFile):
     # No settings/options are necessary, this is header only
 
     def requirements(self):
-        self.requires("fftw/3.3.8@darcamo/stable")
+        self.requires("fftw3/3.3.8@darcamo/stable")
         self.requires("xtensor/0.16.4@darcamo/stable")
 
     def source(self):
@@ -26,6 +26,13 @@ class XtensorfftwConan(ConanFile):
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()""")
 
+        # Hack: For some reason we can't find the required components even
+        # though we have included them in the FFTW recipe (the dependency) ->
+        # Change the find_package to remove the explicit components
+        tools.replace_in_file("sources/CMakeLists.txt", """    find_package(FFTW REQUIRED
+            COMPONENTS FLOAT_LIB DOUBLE_LIB LONGDOUBLE_LIB)""",
+                              '''    find_package(FFTW REQUIRED)''')
+
     def build(self):
         os.mkdir("build")
         shutil.move("conanbuildinfo.cmake", "build/")
@@ -35,7 +42,4 @@ conan_basic_setup()""")
         cmake.install()
 
     def package_info(self):
-        try:
-            shutil.move("lib64", "lib")
-        except Exception:
-            pass
+        self.cpp_info.libdirs = ["lib64", "lib"]
