@@ -6,9 +6,9 @@ import shutil
 class XtensorfftwConan(ConanFile):
     name = "xtensor-fftw"
     version = "0.2.4"
-    license = "<Put the package license here>"
-    url = "<Package recipe repository url here, for issues about the package>"
-    description = "<Description of Xtensorfftw here>"
+    license = "BSD-3"
+    url = "https://github.com/darcamo/connan-xtensor-fftw"
+    description = "FFTW bindings for xtensor "
     no_copy_source = True
     generators = "cmake"
     # No settings/options are necessary, this is header only
@@ -18,20 +18,16 @@ class XtensorfftwConan(ConanFile):
         self.requires("xtensor/0.16.4@darcamo/stable")
 
     def source(self):
-        tools.get("https://github.com/egpbos/xtensor-fftw/archive/{0}.zip".format(self.version))
+        tools.get(
+            "https://github.com/egpbos/xtensor-fftw/archive/{0}.zip".format(
+                self.version))
         shutil.move("xtensor-fftw-{0}".format(self.version), "sources")
 
-        tools.replace_in_file("sources/CMakeLists.txt", "project(xtensor-fftw)",
-                              """project(xtensor-fftw)
+        tools.replace_in_file(
+            "sources/CMakeLists.txt", "project(xtensor-fftw)",
+            """project(xtensor-fftw)
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()""")
-
-        # Hack: For some reason we can't find the required components even
-        # though we have included them in the FFTW recipe (the dependency) ->
-        # Change the find_package to remove the explicit components
-        tools.replace_in_file("sources/CMakeLists.txt", """    find_package(FFTW REQUIRED
-            COMPONENTS FLOAT_LIB DOUBLE_LIB LONGDOUBLE_LIB)""",
-                              '''    find_package(FFTW REQUIRED)''')
 
     def build(self):
         os.mkdir("build")
