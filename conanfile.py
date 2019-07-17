@@ -5,7 +5,7 @@ import shutil
 
 class XtensorfftwConan(ConanFile):
     name = "xtensor-fftw"
-    version = "0.2.4"
+    version = "0.2.5"
     license = "BSD-3"
     url = "https://github.com/darcamo/connan-xtensor-fftw"
     description = "FFTW bindings for xtensor "
@@ -15,7 +15,7 @@ class XtensorfftwConan(ConanFile):
 
     def requirements(self):
         self.requires("fftw3/3.3.8@darcamo/stable")
-        self.requires("xtensor/0.16.4@darcamo/stable")
+        self.requires("xtensor/[>=0.16.4]@darcamo/stable")
 
     def source(self):
         tools.get(
